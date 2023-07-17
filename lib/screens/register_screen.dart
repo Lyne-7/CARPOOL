@@ -215,7 +215,7 @@ Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
 
 
                               ),
-                              initialCountryCode: 'BD',
+                              initialCountryCode: 'KE',
                               onChanged: (text) => setState(() {
                                 phoneTextEditingController.text = text.completeNumber;
                               }),

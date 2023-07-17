@@ -13,9 +13,10 @@ class RequestAssistant{
         return decodeResponseData;
       }
       else{
-        return 'Error occurred. no response.';
+        return "Error occurred. no response.";
       }
-    }catch (exp){'Error occurred. no response.';
+    }catch (exp){
+      return "Error occurred. no response.";
     }
   }
 }
