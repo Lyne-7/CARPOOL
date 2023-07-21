@@ -10,3 +10,9 @@ UserModal? userModalCurrentInfo = UserModal();
 
 DirectionDetailsInfo? tripDirectionDetailsInfo;
 String userDropOffAddress= '';
+String driveCarDetails = '';
+String driverName= '';
+String driverPhone= '';
+
+double countRatingStars = 0.0;
+String titleStarRating = '';

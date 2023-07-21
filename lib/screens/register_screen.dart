@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'car_info_screen.dart';
 
 import 'forgot_password_screen.dart';
 import 'login_screen.dart';
@@ -40,6 +41,7 @@ await firebaseAuth.createUserWithEmailAndPassword(
 currentUser = auth.user;
 
 if(currentUser !=null) {
+  await currentUser!.sendEmailVerification();
   Map userMap = {
     "id": currentUser!.uid,
     "name": nameTextEditingController.text.trim(),
@@ -47,12 +49,12 @@ if(currentUser !=null) {
     "phone": phoneTextEditingController.text.trim(),
 
   };
-  DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users");
+  DatabaseReference userRef = FirebaseDatabase.instance.reference().child("drivers");
   userRef.child(currentUser!.uid).set(userMap);
 
 }
-await Fluttertoast.showToast(msg: "Succesfully Registered");
-Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
+await Fluttertoast.showToast(msg: "Succesfully Registered.We have sent an email verification");
+Navigator.push(context, MaterialPageRoute(builder: (context) => CarInfoScreen()));
 
 }).catchError((errorMessage){
   Fluttertoast.showToast(msg: "Error occurred");
@@ -268,11 +270,21 @@ Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
                                 if(text == null || text.isEmpty){
                                   return "Password can\'t be empty";
                                 }
-                                if(text.length < 8) {
-                                  return "Please enter a valid password";
+                                List<String> errors = [];
+                                if (text.length < 8) {
+                                  errors.add("Password should be at least 8 characters long");
                                 }
-                                if(text.length > 49){
-                                  return "Password can\'t be more than 50 characters";
+                                if (!RegExp(r'[0-9]').hasMatch(text)) {
+                                  errors.add("Password should include at least one number");
+                                }
+                                if (!RegExp(r'[A-Z]').hasMatch(text)) {
+                                  errors.add("Password should include at least one capital letter");
+                                }
+                                if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(text)) {
+                                  errors.add("Password should include at least one special character");
+                                }
+                                if (errors.isNotEmpty) {
+                                  return errors.join(', ');
                                 }
                                 return null;
                               },
@@ -334,6 +346,15 @@ Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
                                 }
                                 if(text.length < 8) {
                                   return "Please enter a valid password";
+                                }
+                                if (!RegExp(r'[0-9]').hasMatch(text)) {
+                                  return "Password must include at least one digit";
+                                }
+                                if (!RegExp(r'[A-Z]').hasMatch(text)) {
+                                  return "Password must include at least one capital letter";
+                                }
+                                if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(text)) {
+                                  return "Password must include at least one special character";
                                 }
                                 if(text.length > 49){
                                   return "Password can\'t be more than 50 characters";

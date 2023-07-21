@@ -2,6 +2,7 @@ import 'package:carpool_users/global/global.dart';
 import 'package:carpool_users/modals/user_modal.dart';
 import 'package:carpool_users/screens/profile_screen.dart';
 import 'package:carpool_users/splashScreen/splash_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -40,12 +41,18 @@ class DrawerScreen extends StatelessWidget {
 
                  SizedBox(height: 20,),
 
-                 Text(
-                  userModalCurrentInfo?.name ?? 'N/A',
-                   style: TextStyle(
-                     fontWeight: FontWeight.bold,
-                     fontSize: 20,
-                   ),
+                 FutureBuilder<DataSnapshot>(
+                     future: FirebaseDatabase.instance.ref().child('drivers').child(FirebaseAuth.instance.currentUser!.uid).get(),
+                     builder: (context, snapShot) {
+                       Map<Object?, Object?> data = snapShot.data!.value as Map<Object?, Object?>;
+                       String name = data['name'].toString();
+                       return Text('${name ?? "N/A"}',
+                         style: TextStyle(
+                           fontSize: 18,
+                           fontWeight: FontWeight.bold,
+                         ),
+                       );
+                     }
                  ),
 
                  SizedBox(height: 10,),
@@ -76,16 +83,10 @@ class DrawerScreen extends StatelessWidget {
 
                  Text('Notifications', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
 
-                 SizedBox(height: 20,),
-
-                 Text('Promos', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
 
                  SizedBox(height: 20,),
                  Text('Help', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
 
-                 SizedBox(height: 20,),
-
-                 Text('Free trips', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
 
                  SizedBox(height: 20,),
 

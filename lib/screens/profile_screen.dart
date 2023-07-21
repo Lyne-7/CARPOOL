@@ -1,4 +1,6 @@
 import 'package:carpool_users/global/global.dart';
+import 'package:carpool_users/modals/user_modal.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -15,7 +17,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   final nameTextEditingController = TextEditingController();
   final phoneTextEditingController = TextEditingController();
-  DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users");
+  DatabaseReference userRef = FirebaseDatabase.instance.reference().child("users");
 
   Future<void> showUserNameDialogAlert(BuildContext context, String name){
     bool darkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
@@ -44,7 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
              TextButton(
                onPressed: () {
-                 userRef.child(firebaseAuth.currentUser!.uid).update({
+                 userRef.child(FirebaseAuth.instance.currentUser!.uid).update({
                    'name' : nameTextEditingController.text.trim(),
                  }).then((value){
                    nameTextEditingController.clear();
@@ -91,7 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               TextButton(
                 onPressed: () {
-                  userRef.child(firebaseAuth.currentUser!.uid).update({
+                  userRef.child(FirebaseAuth.instance.currentUser!.uid).update({
                     'phone' : phoneTextEditingController.text.trim(),
                   }).then((value){
                     phoneTextEditingController.clear();
@@ -110,6 +112,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }
     );
   }
+
+
+
 
 
   @override
@@ -158,20 +163,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
                   children: [
-                    Text('${userModalCurrentInfo!.name!}',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                       ),
-                       ),
-                    IconButton(
-                        onPressed: (){
+                  FutureBuilder<DataSnapshot>(
+                      future: FirebaseDatabase.instance.ref().child('drivers').child(FirebaseAuth.instance.currentUser!.uid).get(),
+                      builder: (context, snapShot) {
+                        Map<Object?, Object?> data = snapShot.data!.value as Map<Object?, Object?>;
+                        String name = data['name'].toString();
+                        return Text('${name ?? "N/A"}',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      }
+                  ),
+                  IconButton(
+                      onPressed: (){
 
-                        },
-                        icon: Icon(
-                          Icons.edit,
-                        )),
-                  ],
+
+
+
+
+                      },
+                      icon: Icon(
+                        Icons.edit,
+                      )),
+                ],
                 ),
                 Divider(
                  thickness: 1,
@@ -181,15 +197,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
                   children: [
-                    Text('${userModalCurrentInfo!.phone!}',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    FutureBuilder<DataSnapshot>(
+                        future: FirebaseDatabase.instance.ref().child('drivers').child(FirebaseAuth.instance.currentUser!.uid).get(),
+                        builder: (context, snapShot) {
+                          Map<Object?, Object?> data = snapShot.data!.value as Map<Object?, Object?>;
+                          String phone = data['phone'].toString();
+                          return Text('${phone ?? "N/A"}',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          );
+                        }
                     ),
                     IconButton(
                         onPressed: (){
-                          showUserPhoneDialogAlert(context, userModalCurrentInfo!.phone!);
+
+
+                          },
+                        icon: Icon(
+                          Icons.edit,
+                        )),
+                  ],
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                  children: [
+                    FutureBuilder<DataSnapshot>(
+                        future: FirebaseDatabase.instance.ref().child('drivers').child(FirebaseAuth.instance.currentUser!.uid).child('car_details').get(),
+                        builder: (context, snapShot) {
+                          Map<Object?, Object?> data = snapShot.data!.value as Map<Object?, Object?>;
+                          String car_model = data['car_model'].toString();
+                          return Text('${car_model ?? "N/A"}',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          );
+                        }
+                    ),
+                    IconButton(
+                        onPressed: (){
+
 
                         },
                         icon: Icon(
@@ -197,11 +248,73 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         )),
                   ],
                 ),
-                Text('${userModalCurrentInfo!.email!}',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                  children: [
+                    FutureBuilder<DataSnapshot>(
+                        future: FirebaseDatabase.instance.ref().child('drivers').child(FirebaseAuth.instance.currentUser!.uid).child('car_details').get(),
+                        builder: (context, snapShot) {
+                          Map<Object?, Object?> data = snapShot.data!.value as Map<Object?, Object?>;
+                          String car_number = data['car_number'].toString();
+                          return Text('${car_number ?? "N/A"}',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          );
+                        }
+                    ),
+                    IconButton(
+                        onPressed: (){
+
+
+                        },
+                        icon: Icon(
+                          Icons.edit,
+                        )),
+                  ],
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                  children: [
+                    FutureBuilder<DataSnapshot>(
+                        future: FirebaseDatabase.instance.ref().child('drivers').child(FirebaseAuth.instance.currentUser!.uid).child('car_details').get(),
+                        builder: (context, snapShot) {
+                          Map<Object?, Object?> data = snapShot.data!.value as Map<Object?, Object?>;
+                          String car_color = data['car_color'].toString();
+                          return Text('${car_color ?? "N/A"}',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          );
+                        }
+                    ),
+                    IconButton(
+                        onPressed: (){
+
+
+                        },
+                        icon: Icon(
+                          Icons.edit,
+                        )),
+                  ],
+                ),
+                FutureBuilder<DataSnapshot>(
+                    future: FirebaseDatabase.instance.ref().child('drivers').child(FirebaseAuth.instance.currentUser!.uid).get(),
+                    builder: (context, snapShot) {
+                      Map<Object?, Object?> data = snapShot.data!.value as Map<Object?, Object?>;
+                      String email = data['email'].toString();
+                      return Text('${email ?? "N/A"}',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    }
                 ),
 
 
